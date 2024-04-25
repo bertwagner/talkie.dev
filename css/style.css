@@ -1,0 +1,22 @@
+.chat-container {
+    width:400px;
+}
+
+.message-sent {
+    border: 2px solid gray;
+    text-align:left;
+    padding:2px;
+    margin:5px;
+}
+
+.message-received {
+    border: 2px solid blue;
+    text-align:left;
+    padding:2px;
+    margin:5px;
+}
+
+.chat-container {
+    margin-top:30px
+}
+

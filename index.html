@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>talkie.dev</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="settings">
+        <form id="settings">
+        <div id="api-key">
+            <select id="service">
+                <option value="OpenAI">OpenAI</option>
+            </select>
+            
+            <input id="apikey" />
+        </div>
+        <textarea id="system-prompt" placeholder="System prompt"></textarea> <br>
+        <button type="submit">Save</button>
+        </form>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-window">
+            <div class="chat-messages" id="chat-messages">
+
+            </div>
+            <form id="send-prompt">
+                <input type="text" id="user-prompt" placeholder="Type your message...">
+                <button id="send-button" class="send-button" type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
