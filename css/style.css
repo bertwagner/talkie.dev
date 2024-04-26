@@ -1,60 +1,52 @@
-*{
+* {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-  }
+}
 
 .container {
-    margin: auto;
-    width:80vw;
-    height:100vh;
-    min-height:100vh;
-
-    display:grid;
-    /* grid-template-columns: 1fr; */
-    grid-template-rows:50px 400px auto;
-
-
-
-    border:1px solid red;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    border: 1px solid red;
 }
 
 
-.menu {
+.header {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
 }
 
-.menu > .item {
+.header > .item {
     margin: 0px 10px 0px 10px;
 }
 
 
 .settings {
-    border:1px solid purple;
-    margin:auto;
+    border: 1px solid purple;
+    margin: auto;
+    flex: 1;
 }
 
 
 .chat-container {
-    border:1px solid green;
+    border: 1px solid green;
     margin: 0px 0 0 30px;
-    
+
 }
 
 .message-sent {
     border: 2px solid gray;
-    text-align:left;
-    padding:2px;
-    margin:5px;
+    text-align: left;
+    padding: 2px;
+    margin: 5px;
 }
 
 .message-received {
     border: 2px solid blue;
-    text-align:left;
-    padding:2px;
-    margin:5px;
+    text-align: left;
+    padding: 2px;
+    margin: 5px;
 }
-
