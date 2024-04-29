@@ -93,7 +93,9 @@ let callApi = async function(systemPrompt, prompt,model) {
 // Event listeners
 //
 document.addEventListener('click', function (event) {
-
+    if (event.target.dataset.nav == "settings") {
+        document.querySelector("#settings-container").classList.toggle("hidden");
+    }
 });
 
 document.addEventListener('submit', function(event) {
