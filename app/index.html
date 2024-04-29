@@ -5,16 +5,30 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="viewport-fit=cover">
+    <meta content='yes' name='apple-mobile-web-app-capable'/>
+    <meta content='yes' name='mobile-web-app-capable'/>
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-title" content="talkie.dev">
+    <link rel="apple-touch-icon" href="icon.png">
+
     <title>talkie.dev</title>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.amber.min.css"
+        />
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
     <div class="container">
-        <div class="header">
-            <div class="item">About</div>
-            <div class="item">Settings</div>
-        </div>
+        <header>
+            <nav>
+            <a href="#" class="item">About</a>
+            <a href="#"  class="item">Model</a>
+            <a href="#"  class="item">Settings</a>
+        </nav>
+        </header>
 
         <div class="settings">
             <form id="settings">
@@ -36,8 +50,10 @@
 
                 </div>
                 <form id="send-prompt">
-                    <input type="text" id="user-prompt" placeholder="Type your message...">
-                    <button id="send-button" class="send-button" type="submit">Send</button>
+                    <div class="form-group">
+                        <input type="text" id="user-prompt" placeholder="Type your message..." autofocus="autofocus">
+                        <button id="send-button" class="send-button" type="submit">Send</button>
+                    </div>
                 </form>
             </div>
         </div>
