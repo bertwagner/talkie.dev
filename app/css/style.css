@@ -1,3 +1,41 @@
+/* layout */
+
+html,body {
+    height: 100%;
+}
+
+
+/* have the send message footer stick to the bottom */
+body > footer {
+    position: sticky;
+    top: 100%;
+}
+
+
+
+/* style */
+
 .hidden {
     display:none;
 }
+
+header > section {
+    background-color: rgb(252, 250, 245);
+    padding:10px;
+}
+
+
+.message {
+    background-color:rgb(250, 250, 250);
+    border-radius:25px;
+    /* white-space: pre-wrap; */
+}
+
+.message-received {
+    margin-left:40px;
+}
+
+pre {
+    white-space: pre-wrap;
+}
+

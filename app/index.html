@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="viewport" content="viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta content='yes' name='apple-mobile-web-app-capable'/>
     <meta content='yes' name='mobile-web-app-capable'/>
     <meta name="apple-touch-fullscreen" content="yes">
@@ -21,56 +20,96 @@
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <hgroup>
-                <h1>Talkie</h1>
-                <p>A minimalist, responsive, local storage interface for LLMs.</p>
-            </hgroup>
+    <header>
+        <hgroup>
+            <h1>Talkie</h1>
+            
+        </hgroup>
 
-            <nav>
-                <ul>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Model</a></li>
-                    <li><a href="#" data-nav="settings">Settings</a></li>
-                </ul>
-            </nav>
+        <nav>
+            <ul>
+                <li><a href="#" data-nav="about">About</a></li>
+                <li><a href="#" data-nav="model">Model</a></li>
+                <li><a href="#" data-nav="settings">Settings</a></li>
+            </ul>
+        </nav>
 
-            <section id="settings-container" class="hidden">
-                <h4>Settings</h3>
-                <form id="settings">
-                    <div id="api-key">
-                        <select id="service">
-                            <option value="OpenAI">OpenAI</option>
-                        </select>
+        <section id="about-container" class="hidden">
+            <h4>About</h4>
+            <p>Talkie is minimalist, responsive, local storage, privacy focused interface for LLMs. That means:</p>
+            <ul>
+                <li>It is simple and easy to use</li>
+                <li>It should work on any device</li>
+                <li>API keys and settings are stored in your browser <strong>only</strong></li>
+                <li>It does not log any chats</li>
+            </ul>
+
+            <p>I built this because I wanted a tool to interact with LLM APIs that didn't require signups, data collection, and would work everywhere.</p>
+
+            <p>Made by <a href="https://bertwagner.com">Bert Wagner</a>.</p>
+        </section>
+
+        <section id="model-container" class="hidden">
+            <h4>Model</h4>
+            <form id="model">
+                <fieldset>
+                    <label>System Prompt
+                    <textarea id="system-prompt" placeholder="System prompt"></textarea>
+                    </label>
+                </fieldset>
+                <button type="submit">Save</button>
+            </form>
+        </section>
+
+        <section id="settings-container" class="hidden">
+            <h4>Settings</h4>
+            <form id="settings">
+                <fieldset>
+                    <label>Service
+                    <select id="service">
+                        <option value="OpenAI">OpenAI</option>
+                    </select>
+                    </label>
+                    <label>Model
+                    <select id="model">
+                        <option value="gpt3.5turbo">gpt 3.5 turbo</option>
+                        <option value="gpt4turbo">gpt 4 turbo</option>
+                        <option value="gpt4">gpt 4</option>
+                    </select>
+                    </label>
+                    <label>OpenAI key
+                    <input id="api-key" type="password" />
+                    </label>
+                </fieldset>
+                <button type="submit">Save</button>
+            </form>
+        </section>
+
+    </header>
     
-                        <input id="apikey" />
-                    </div>
-                    <textarea id="system-prompt" placeholder="System prompt"></textarea> <br>
-                    <button type="submit">Save</button>
-                </form>
-            </section>
+    <main>
+        <div class="chat-container">
+            <div class="chat-window">
+                <div class="chat-messages" id="chat-messages">
 
-        </header>
-        
-        <main>
-            <div class="chat-container">
-                <div class="chat-window">
-                    <div class="chat-messages" id="chat-messages">
-
-                    </div>
-                    <form id="send-prompt">
-                        <div class="form-group">
-                            <input type="text" id="user-prompt" placeholder="Type your message..." autofocus="autofocus">
-                            <button id="send-button" class="send-button" type="submit">Send</button>
-                        </div>
-                    </form>
                 </div>
+                
             </div>
-        </main>
+        </div>
+    </main>
 
-    </div>
 
+    <footer>
+        <p><a id="clear" href="#">Clear conversation</a></p>
+        <form id="send-prompt">
+            <fieldset class="grid">
+                <input type="text" id="user-prompt" placeholder="Type your message..." autofocus="true">
+                <button type="submit">Send</button>
+            </fieldset>
+        </form>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
     <script src="js/main.js"></script>
 </body>
 
