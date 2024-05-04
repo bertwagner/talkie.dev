@@ -115,6 +115,7 @@ let send_prompt = async function(user_prompt) {
             if (next_value) {
                 raw_output += next_value
                 messageReceived.innerHTML = converter.makeHtml(raw_output);
+                messageReceived.scrollIntoView();
             } 
         });
         
@@ -194,6 +195,8 @@ document.addEventListener('submit', function(event) {
             document.querySelector("#user-prompt").blur();
 
             send_prompt(user_prompt);
+
+            document.querySelector("#user-prompt").focus();
         }
 });
 
