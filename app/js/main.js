@@ -56,6 +56,36 @@ function iterate(obj, stack=null) {
 
 let send_prompt = async function(user_prompt) {
 
+    let get_current_weather = function(location,format) {
+        console.log("weather function!", location, format);
+        return "HELLO SIMON";
+    }
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "get_current_weather",
+                "description": "Get current weather",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "location": {
+                            "type": "string",
+                            "description": "The city and state, e.g. San Francisco, CA",
+                        },
+                        "format": {
+                            "type": "string",
+                            "enum": ["celsius", "fahrenheit"],
+                            "description": "The temperature unit to use. Infer this from the users location.",
+                        },
+                    },
+                    "required": [],
+                },
+            }
+        }
+    ]
+
+
     messages.push({
         "role": "user",
         "content": user_prompt
@@ -85,6 +115,7 @@ let send_prompt = async function(user_prompt) {
         model: user_data["settings"]["service_settings"]["llm_model"],
         response_format: ((user_data["model"]["json_mode"]) ? {"type":"json_object"} : null),
         stream: true,
+        tools: tools,
         messages: messages
         }),
     });
@@ -103,6 +134,8 @@ let send_prompt = async function(user_prompt) {
     if (user_data["model"]["json_mode"]==true){
         raw_output += '```js\n'
     }
+
+    let tool_call = {};
     
     while (true) {
         const { value, done } = await reader.read();
@@ -124,7 +157,7 @@ let send_prompt = async function(user_prompt) {
                 dataDone = true;
                 return;
             }
-            
+
             const json = JSON.parse(data.substring(6));
             let next_value = json.choices[0].delta.content;
             
@@ -134,10 +167,25 @@ let send_prompt = async function(user_prompt) {
                 messageReceived.innerHTML = converter.makeHtml(raw_output);
                 messageReceived.scrollIntoView();
             } 
+
+            if (json.choices[0].delta.tool_calls) {
+                let tool_output = json.choices[0].delta.tool_calls[0].function;
+                if (tool_output.name){
+                    tool_call["name"] = tool_output.name;
+                }
+                if (!tool_call["arguments"]) {
+                    tool_call["arguments"] = "";
+                }
+                if (tool_output.arguments){
+                    tool_call["arguments"] += tool_output.arguments;
+                }
+            }
         });
         
         if (dataDone) break;
+        
     }
+    
     if (user_data["model"]["json_mode"]==true){
         raw_output += '\n```'
     }
@@ -147,6 +195,7 @@ let send_prompt = async function(user_prompt) {
         "role": "assistant",
         "content": raw_output
     });
+    console.log(tool_call)
 }
 
 
@@ -225,7 +274,7 @@ document.addEventListener('submit', function(event) {
 // load user settings from localStorage
 if ("user_data" in localStorage) {
     user_data = JSON.parse(localStorage.getItem("user_data"));
-    console.log(user_data)
+
     iterate(user_data);
 
     // add system prompt to messages
@@ -239,5 +288,5 @@ if ("user_data" in localStorage) {
 
 const responseContainer = document.getElementById('chat-messages');
 
-//let user_prompt = "Draw me an ascii christmas tree"
-//send_prompt(user_prompt)
+let user_prompt = "What's the weather in rocky river, oh?"
+send_prompt(user_prompt)
