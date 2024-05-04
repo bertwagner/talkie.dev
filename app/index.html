@@ -61,7 +61,12 @@
                     <label>System Prompt
                     <textarea id="model__system_prompt" placeholder="System prompt"></textarea>
                     </label>
+                    <label>
+                        <input id="model__json_mode" type="checkbox" role="switch" />
+                        JSON Output
+                      </label>
                 </fieldset>
+
                 <button type="submit">Save</button>
             </form>
         </section>
@@ -70,11 +75,6 @@
             <h4>Settings</h4>
             <form id="settings">
                 <fieldset>
-                    <label>Service
-                    <select id="settings__service">
-                        <option value="OpenAI">OpenAI</option>
-                    </select>
-                    </label>
                     <label>Model
                     <select id="settings__service_settings__llm_model">
                         <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>

@@ -5,7 +5,8 @@
 // defaults
 let user_data = {
    model: {
-    system_prompt: "You are a helpful assistant."
+    system_prompt: "You are a helpful assistant.",
+    json_mode: false
    },
    settings: {
     service: "OpenAI",
@@ -40,7 +41,12 @@ function iterate(obj, stack=null) {
                 }
             } else {
                 if (document.querySelector(`#${stack}__${property}`) != null) {
-                    document.querySelector(`#${stack}__${property}`).value = obj[property];
+                    let element = document.querySelector(`#${stack}__${property}`);
+                    if (element.type == "checkbox")
+                        element.checked = obj[property];
+                    else {
+                        element.value = obj[property];
+                    }
                 }
             }
         }
@@ -62,6 +68,12 @@ let send_prompt = async function(user_prompt) {
     messageSent.textContent = user_prompt;
     responseContainer.appendChild(messageSent);
 
+    // add json phrase if not found
+
+    if (user_data["model"]["json_mode"] == true && messages[messages.length-1]["content"].toLowerCase().indexOf("json") == -1) {
+        messages[messages.length-1]["content"] += "Please return in JSON format.";
+    }
+
     // call api
     const response = await fetch(user_data['settings']['service_settings']['endpoint'], {
         method: 'POST',
@@ -71,6 +83,7 @@ let send_prompt = async function(user_prompt) {
         },
         body: JSON.stringify({
         model: user_data["settings"]["service_settings"]["llm_model"],
+        response_format: ((user_data["model"]["json_mode"]) ? {"type":"json_object"} : null),
         stream: true,
         messages: messages
         }),
@@ -170,11 +183,10 @@ document.addEventListener('submit', function(event) {
 
         if (event.target.id == "model") {
             user_data['model']['system_prompt'] = document.querySelector("#model__system_prompt").value;
-            
-            localStorage.setItem("user_data", JSON.stringify(user_data));
-            
-            document.querySelector("#model-container").classList.toggle("hidden");
+            user_data['model']['json_mode'] = document.querySelector("#model__json_mode").checked;
 
+            localStorage.setItem("user_data", JSON.stringify(user_data));
+            document.querySelector("#model-container").classList.toggle("hidden");
         }
 
         if (event.target.id == "settings") {
@@ -184,9 +196,7 @@ document.addEventListener('submit', function(event) {
             user_data['settings']['service_settings']['api_key'] = document.querySelector("#settings__service_settings__api_key").value;
             
             localStorage.setItem("user_data", JSON.stringify(user_data));
-
             document.querySelector("#settings-container").classList.toggle("hidden");
-
         }
 
         if (event.target.id == "send-prompt") {
