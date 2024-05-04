@@ -99,6 +99,10 @@ let send_prompt = async function(user_prompt) {
 
     var converter = new showdown.Converter();
     let raw_output = '';
+
+    if (user_data["model"]["json_mode"]==true){
+        raw_output += '```js\n'
+    }
     
     while (true) {
         const { value, done } = await reader.read();
@@ -133,6 +137,9 @@ let send_prompt = async function(user_prompt) {
         });
         
         if (dataDone) break;
+    }
+    if (user_data["model"]["json_mode"]==true){
+        raw_output += '\n```'
     }
 
     messageReceived.innerHTML = converter.makeHtml(raw_output);
