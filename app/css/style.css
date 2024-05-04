@@ -36,3 +36,6 @@ pre {
     white-space: pre-wrap;
 }
 
+section {
+    border-bottom: 1px dashed var(--pico-color-zinc-100);
+}

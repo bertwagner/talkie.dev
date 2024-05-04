@@ -22,6 +22,8 @@ let user_data = {
    }
 };
 
+let messages = [];
+
 
 //
 // Methods
@@ -37,7 +39,6 @@ function iterate(obj, stack=null) {
                     iterate(obj[property], stack + '__' + property);
                 }
             } else {
-                console.log(`#${stack}__${property}`)
                 if (document.querySelector(`#${stack}__${property}`) != null) {
                     document.querySelector(`#${stack}__${property}`).value = obj[property];
                 }
@@ -47,17 +48,21 @@ function iterate(obj, stack=null) {
 }
 
 
-let printPrompt = function(prompt) {
+let send_prompt = async function(user_prompt) {
+
+    messages.push({
+        "role": "user",
+        "content": user_prompt
+    });
+
+    // print user prompt to chat
     const messageSent = document.createElement("article");
     messageSent.classList.add('message');
     messageSent.classList.add('message-sent');
-    messageSent.textContent = prompt;
+    messageSent.textContent = user_prompt;
     responseContainer.appendChild(messageSent);
-}
 
-
-let callApi = async function(system_prompt, prompt, model) {
-
+    // call api
     const response = await fetch(user_data['settings']['service_settings']['endpoint'], {
         method: 'POST',
         headers: {
@@ -65,18 +70,9 @@ let callApi = async function(system_prompt, prompt, model) {
         'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-        model: model,
+        model: user_data["settings"]["service_settings"]["llm_model"],
         stream: true,
-        messages: [
-            {
-                "role": "system",
-                "content": system_prompt
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-            ],
+        messages: messages
         }),
     });
 
@@ -126,6 +122,10 @@ let callApi = async function(system_prompt, prompt, model) {
     }
 
     messageReceived.innerHTML = converter.makeHtml(raw_output);
+    messages.push({
+        "role": "assistant",
+        "content": raw_output
+    });
 }
 
 
@@ -153,6 +153,13 @@ document.addEventListener('click', function (event) {
 
     if (event.target.id == "clear") {
         document.querySelector("#chat-messages").innerHTML="";
+        
+        // clear messages and add system prompt
+        messages = [];
+        messages.push({
+            "role": "system",
+            "content": user_data["model"]["system_prompt"]
+        })
     }
     
 });
@@ -162,9 +169,11 @@ document.addEventListener('submit', function(event) {
 
         if (event.target.id == "model") {
             user_data['model']['system_prompt'] = document.querySelector("#model__system_prompt").value;
+            
             localStorage.setItem("user_data", JSON.stringify(user_data));
+            
+            document.querySelector("#model-container").classList.toggle("hidden");
 
-            // document.querySelector("#service").blur();
         }
 
         if (event.target.id == "settings") {
@@ -175,15 +184,16 @@ document.addEventListener('submit', function(event) {
             
             localStorage.setItem("user_data", JSON.stringify(user_data));
 
-            // document.querySelector("#service").blur();
+            document.querySelector("#settings-container").classList.toggle("hidden");
+
         }
 
         if (event.target.id == "send-prompt") {
-            prompt = document.querySelector("#user-prompt").value;
+            user_prompt = document.querySelector("#user-prompt").value;
             document.querySelector("#user-prompt").value="";
             document.querySelector("#user-prompt").blur();
-            printPrompt(prompt);
-            callApi(user_data["model"]["system_prompt"], prompt, user_data["settings"]["service_settings"]["llm_model"]);
+
+            send_prompt(user_prompt);
         }
 });
 
@@ -197,10 +207,18 @@ if ("user_data" in localStorage) {
     user_data = JSON.parse(localStorage.getItem("user_data"));
     console.log(user_data)
     iterate(user_data);
+
+    // add system prompt to messages
+    messages.push({
+        "role": "system",
+        "content": user_data["model"]["system_prompt"]
+    })
 }
+
+
 
 const responseContainer = document.getElementById('chat-messages');
 
-prompt = "Draw me an ascii christmas tree"
-printPrompt(prompt);
-callApi(user_data["model"]["system_prompt"], prompt, user_data["settings"]["service_settings"]["llm_model"])
+let user_prompt = "Draw me an ascii christmas tree"
+
+send_prompt(user_prompt)
