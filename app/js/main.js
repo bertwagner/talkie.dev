@@ -198,7 +198,6 @@ document.addEventListener('submit', function(event) {
 
         if (event.target.id == "settings") {
 
-            user_data['settings']['service'] = document.querySelector("#settings__service").value;
             user_data['settings']['service_settings']['llm_model'] = document.querySelector("#settings__service_settings__llm_model").value;
             user_data['settings']['service_settings']['api_key'] = document.querySelector("#settings__service_settings__api_key").value;
             
@@ -225,7 +224,7 @@ document.addEventListener('submit', function(event) {
 // load user settings from localStorage
 if ("user_data" in localStorage) {
     user_data = JSON.parse(localStorage.getItem("user_data"));
-    console.log(user_data)
+
     iterate(user_data);
 
     // add system prompt to messages
