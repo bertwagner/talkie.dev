@@ -2,29 +2,50 @@
 // Variables
 //
 
-let api_key = "";
-let model = "gpt-3.5-turbo";
-let endpoint = "https://api.openai.com/v1/chat/completions";
-let system_prompt = "You are a helpful assistant.";
-document.querySelector("#system-prompt").value = system_prompt
-
-if ("model" in localStorage){
-    system_prompt = JSON.parse(localStorage.getItem("model"))["system_prompt"];
-    document.querySelector("#system-prompt").value = system_prompt;
-}
-if ("settings" in localStorage){
-    api_key = JSON.parse(localStorage.getItem("settings"))["api_key"];
-    document.querySelector("#api-key").value = api_key;
-}
-
-const responseContainer = document.getElementById('chat-messages');
-
-
+// defaults
+let user_data = {
+   model: {
+    system_prompt: "You are a helpful assistant"
+   },
+   settings: {
+    service: "OpenAI",
+    service_settings: {
+        llm_model: "gpt-3.5-turbo",
+        endpoint: "https://api.openai.com/v1/chat/completions",
+        api_key: "",
+        image_generation_on: true,
+        image_generation_model: "dall-e",
+        vision_generation_on: true,
+        vision_generation_model: "gpt-4-turbo"
+    }
+    
+   }
+};
 
 
 //
 // Methods
 //
+
+function iterate(obj, stack=null) {
+    for (var property in obj) {
+        if (obj.hasOwnProperty(property)) {
+            if (typeof obj[property] == "object") {
+                if (stack == null) {
+                    iterate(obj[property], property);
+                } else {
+                    iterate(obj[property], stack + '__' + property);
+                }
+            } else {
+                console.log(`#${stack}__${property}`)
+                if (document.querySelector(`#${stack}__${property}`) != null) {
+                    document.querySelector(`#${stack}__${property}`).value = obj[property];
+                }
+            }
+        }
+    }
+}
+
 
 let printPrompt = function(prompt) {
     const messageSent = document.createElement("article");
@@ -35,13 +56,12 @@ let printPrompt = function(prompt) {
 }
 
 
-
 let callApi = async function(system_prompt, prompt, model) {
 
-    const response = await fetch(endpoint, {
+    const response = await fetch(user_data['settings']['service_settings']['endpoint'], {
         method: 'POST',
         headers: {
-        Authorization: `Bearer ${api_key}`,
+        Authorization: `Bearer ${user_data['settings']['service_settings']['api_key']}`,
         'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -106,12 +126,13 @@ let callApi = async function(system_prompt, prompt, model) {
     }
 
     messageReceived.innerHTML = converter.makeHtml(raw_output);
-    
 }
+
 
 // 
 // Event listeners
 //
+
 document.addEventListener('click', function (event) {
     if (event.target.dataset.nav == "about") {
         document.querySelector("#about-container").classList.toggle("hidden");
@@ -140,27 +161,21 @@ document.addEventListener('submit', function(event) {
         event.preventDefault();
 
         if (event.target.id == "model") {
+            user_data['model']['system_prompt'] = document.querySelector("#model__system_prompt").value;
+            localStorage.setItem("user_data", JSON.stringify(user_data));
 
-            data = {
-                system_prompt: document.querySelector("#system-prompt").value
-            }
-
-            localStorage.setItem("model", JSON.stringify(data));
-            system_prompt = localStorage.getItem("model")["system_prompt"];
-            document.querySelector("#service").blur();
+            // document.querySelector("#service").blur();
         }
 
         if (event.target.id == "settings") {
 
-            data = {
-                service: document.querySelector("#service").value,
-                model: document.querySelector("#model").value,
-                api_key: document.querySelector("#api-key").value
-            }
+            user_data['settings']['service'] = document.querySelector("#settings__service").value;
+            user_data['settings']['service_settings']['llm_model'] = document.querySelector("#settings__service_settings__llm_model").value;
+            user_data['settings']['service_settings']['api_key'] = document.querySelector("#settings__service_settings__api_key").value;
+            
+            localStorage.setItem("user_data", JSON.stringify(user_data));
 
-
-            localStorage.setItem("settings", JSON.stringify(data));
-            document.querySelector("#service").blur();
+            // document.querySelector("#service").blur();
         }
 
         if (event.target.id == "send-prompt") {
@@ -168,7 +183,7 @@ document.addEventListener('submit', function(event) {
             document.querySelector("#user-prompt").value="";
             document.querySelector("#user-prompt").blur();
             printPrompt(prompt);
-            callApi(system_prompt, prompt, model);
+            callApi(user_data["model"]["system_prompt"], prompt, user_data["settings"]["service_settings"]["llm_model"]);
         }
 });
 
@@ -177,6 +192,15 @@ document.addEventListener('submit', function(event) {
 /// init
 /// 
 
+// load user settings from localStorage
+if ("user_data" in localStorage) {
+    user_data = JSON.parse(localStorage.getItem("user_data"));
+    console.log(user_data)
+    iterate(user_data);
+}
+
+const responseContainer = document.getElementById('chat-messages');
+
 prompt = "Draw me an ascii christmas tree"
 printPrompt(prompt);
-callApi(system_prompt, prompt, model)
+callApi(user_data["model"]["system_prompt"], prompt, user_data["settings"]["service_settings"]["llm_model"])

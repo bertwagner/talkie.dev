@@ -1,5 +1,7 @@
 MIT License
 
+Copyright for portions of talkie.dev are held by the owners of the Showdown JS and are provided under the MIT license: https://github.com/showdownjs/showdown. All other copyrights for talkie.dev are held by Bert Wagner, 2024 as described below.
+
 Copyright (c) 2024 Bert Wagner
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -54,7 +54,7 @@
             <form id="model">
                 <fieldset>
                     <label>System Prompt
-                    <textarea id="system-prompt" placeholder="System prompt"></textarea>
+                    <textarea id="model__system_prompt" placeholder="System prompt"></textarea>
                     </label>
                 </fieldset>
                 <button type="submit">Save</button>
@@ -66,19 +66,19 @@
             <form id="settings">
                 <fieldset>
                     <label>Service
-                    <select id="service">
+                    <select id="settings__service">
                         <option value="OpenAI">OpenAI</option>
                     </select>
                     </label>
                     <label>Model
-                    <select id="model">
-                        <option value="gpt3.5turbo">gpt 3.5 turbo</option>
-                        <option value="gpt4turbo">gpt 4 turbo</option>
-                        <option value="gpt4">gpt 4</option>
+                    <select id="settings__service_settings__llm_model">
+                        <option value="gpt-3.5-turbo">gpt 3.5 turbo</option>
+                        <option value="gpt-4-turbo">gpt 4 turbo</option>
+                        <option value="gpt-4">gpt 4</option>
                     </select>
                     </label>
                     <label>OpenAI key
-                    <input id="api-key" type="password" />
+                    <input id="settings__service_settings__api_key" type="password" />
                     </label>
                 </fieldset>
                 <button type="submit">Save</button>
