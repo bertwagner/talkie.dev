@@ -5,7 +5,7 @@
 // defaults
 let user_data = {
    model: {
-    system_prompt: "You are a helpful assistant"
+    system_prompt: "You are a helpful assistant."
    },
    settings: {
     service: "OpenAI",
