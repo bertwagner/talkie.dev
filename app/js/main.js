@@ -219,6 +219,5 @@ if ("user_data" in localStorage) {
 
 const responseContainer = document.getElementById('chat-messages');
 
-let user_prompt = "Draw me an ascii christmas tree"
-
-send_prompt(user_prompt)
+//let user_prompt = "Draw me an ascii christmas tree"
+//send_prompt(user_prompt)
