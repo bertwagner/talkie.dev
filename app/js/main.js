@@ -57,8 +57,7 @@ function iterate(obj, stack=null) {
 let send_prompt = async function(user_prompt) {
 
     let get_current_weather = function(location,format) {
-        console.log("weather function!", location, format);
-        return "HELLO SIMON";
+        return "The weather is TOTALLY RAD!";
     }
     tools = [
         {
@@ -169,15 +168,22 @@ let send_prompt = async function(user_prompt) {
             } 
 
             if (json.choices[0].delta.tool_calls) {
-                let tool_output = json.choices[0].delta.tool_calls[0].function;
-                if (tool_output.name){
-                    tool_call["name"] = tool_output.name;
+                let tool_output = json.choices[0].delta.tool_calls[0];
+
+                if (tool_output.id){
+                    tool_call["id"] = tool_output.id;
                 }
+                
+                if (tool_output["function"].name){
+                    tool_call["name"] = tool_output["function"].name;
+                }
+
                 if (!tool_call["arguments"]) {
                     tool_call["arguments"] = "";
                 }
-                if (tool_output.arguments){
-                    tool_call["arguments"] += tool_output.arguments;
+
+                if (tool_output["function"].arguments){
+                    tool_call["arguments"] += tool_output["function"].arguments;
                 }
             }
         });
@@ -191,11 +197,31 @@ let send_prompt = async function(user_prompt) {
     }
 
     messageReceived.innerHTML = converter.makeHtml(raw_output);
+    messageReceived.scrollIntoView();
     messages.push({
         "role": "assistant",
         "content": raw_output
     });
-    console.log(tool_call)
+
+
+
+    if (tool_call["name"] == "get_current_weather") {
+        tool_call["arguments"] = JSON.parse(tool_call["arguments"]);
+
+        let weather = get_current_weather(tool_call["arguments"]["location"], tool_call["arguments"]["format"])
+
+        raw_output += weather;
+        console.log(raw_output)
+        messageReceived.innerHTML = raw_output;
+        messageReceived.scrollIntoView();
+        messages.push({
+            "role": "function",
+            "tool_call_id": 1234,
+            "name": "get_current_weather",
+            "content": weather
+        });
+
+    }
 }
 
 
