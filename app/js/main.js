@@ -94,7 +94,10 @@ let send_prompt = async function(user_prompt) {
     const messageSent = document.createElement("article");
     messageSent.classList.add('message');
     messageSent.classList.add('message-sent');
-    messageSent.textContent = user_prompt;
+    let p = document.createElement("p");
+    p.textContent = user_prompt;
+    messageSent.append(p);
+
     responseContainer.appendChild(messageSent);
 
     // add json phrase if not found
@@ -169,7 +172,6 @@ let send_prompt = async function(user_prompt) {
 
             if (json.choices[0].delta.tool_calls) {
                 let tool_output = json.choices[0].delta.tool_calls[0];
-
                 if (tool_output.id){
                     tool_call["id"] = tool_output.id;
                 }
@@ -196,6 +198,7 @@ let send_prompt = async function(user_prompt) {
         raw_output += '\n```'
     }
 
+
     messageReceived.innerHTML = converter.makeHtml(raw_output);
     messageReceived.scrollIntoView();
     messages.push({
@@ -211,12 +214,11 @@ let send_prompt = async function(user_prompt) {
         let weather = get_current_weather(tool_call["arguments"]["location"], tool_call["arguments"]["format"])
 
         raw_output += weather;
-        console.log(raw_output)
-        messageReceived.innerHTML = raw_output;
+        messageReceived.innerHTML = converter.makeHtml(raw_output);
         messageReceived.scrollIntoView();
         messages.push({
             "role": "function",
-            "tool_call_id": 1234,
+            "tool_call_id": tool_call["id"],
             "name": "get_current_weather",
             "content": weather
         });

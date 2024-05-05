@@ -39,3 +39,8 @@ pre {
 section {
     border-bottom: 1px dashed var(--pico-color-zinc-100);
 }
+
+/* remove extra margin around paragraphs in chat frames */
+article > p {
+    margin:0;
+}
