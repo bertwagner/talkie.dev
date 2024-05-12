@@ -54,41 +54,14 @@ function iterate(obj, stack=null) {
 }
 
 
+
 let send_prompt = async function(user_prompt) {
-
-    let get_current_weather = function(location,format) {
-        return "The weather is TOTALLY RAD!";
-    }
-    tools = [
-        {
-            "type": "function",
-            "function": {
-                "name": "get_current_weather",
-                "description": "Get current weather",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "location": {
-                            "type": "string",
-                            "description": "The city and state, e.g. San Francisco, CA",
-                        },
-                        "format": {
-                            "type": "string",
-                            "enum": ["celsius", "fahrenheit"],
-                            "description": "The temperature unit to use. Infer this from the users location.",
-                        },
-                    },
-                    "required": [],
-                },
-            }
-        }
-    ]
-
-
+    
     messages.push({
         "role": "user",
         "content": user_prompt
     });
+    
 
     // print user prompt to chat
     const messageSent = document.createElement("article");
@@ -101,29 +74,14 @@ let send_prompt = async function(user_prompt) {
     responseContainer.appendChild(messageSent);
 
     // add json phrase if not found
-
     if (user_data["model"]["json_mode"] == true && messages[messages.length-1]["content"].toLowerCase().indexOf("json") == -1) {
         messages[messages.length-1]["content"] += "Please return in JSON format.";
     }
 
-    // call api
-    const response = await fetch(user_data['settings']['service_settings']['endpoint'], {
-        method: 'POST',
-        headers: {
-        Authorization: `Bearer ${user_data['settings']['service_settings']['api_key']}`,
-        'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-        model: user_data["settings"]["service_settings"]["llm_model"],
-        response_format: ((user_data["model"]["json_mode"]) ? {"type":"json_object"} : null),
-        stream: true,
-        tools: tools,
-        messages: messages
-        }),
-    });
 
-    const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
-    if (!reader) return;
+
+
+    
 
     const messageReceived = document.createElement("article");
     messageReceived.classList.add('message');
@@ -138,6 +96,12 @@ let send_prompt = async function(user_prompt) {
     }
 
     let tool_call = {};
+
+    let openai = new OpenAI(user_data['settings']['service_settings']['api_key']);
+    const response = await openai.call_api(messages);
+    const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
+
+    if (!reader) return;
     
     while (true) {
         const { value, done } = await reader.read();
@@ -208,22 +172,22 @@ let send_prompt = async function(user_prompt) {
 
 
 
-    if (tool_call["name"] == "get_current_weather") {
-        tool_call["arguments"] = JSON.parse(tool_call["arguments"]);
+    // if (tool_call["name"] == "get_current_weather") {
+    //     tool_call["arguments"] = JSON.parse(tool_call["arguments"]);
 
-        let weather = get_current_weather(tool_call["arguments"]["location"], tool_call["arguments"]["format"])
+    //     let weather = get_current_weather(tool_call["arguments"]["location"], tool_call["arguments"]["format"])
 
-        raw_output += weather;
-        messageReceived.innerHTML = converter.makeHtml(raw_output);
-        messageReceived.scrollIntoView();
-        messages.push({
-            "role": "function",
-            "tool_call_id": tool_call["id"],
-            "name": "get_current_weather",
-            "content": weather
-        });
+    //     raw_output += weather;
+    //     messageReceived.innerHTML = converter.makeHtml(raw_output);
+    //     messageReceived.scrollIntoView();
+    //     messages.push({
+    //         "role": "function",
+    //         "tool_call_id": tool_call["id"],
+    //         "name": "get_current_weather",
+    //         "content": weather
+    //     });
 
-    }
+    // }
 }
 
 
@@ -316,5 +280,6 @@ if ("user_data" in localStorage) {
 
 const responseContainer = document.getElementById('chat-messages');
 
-let user_prompt = "What's the weather in rocky river, oh?"
+// let user_prompt = "What's the weather in rocky river, oh?"
+let user_prompt = "How are you feeling?"
 send_prompt(user_prompt)
