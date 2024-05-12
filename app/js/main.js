@@ -78,11 +78,6 @@ let send_prompt = async function(user_prompt) {
         messages[messages.length-1]["content"] += "Please return in JSON format.";
     }
 
-
-
-
-    
-
     const messageReceived = document.createElement("article");
     messageReceived.classList.add('message');
     messageReceived.classList.add('message-received');
@@ -97,6 +92,7 @@ let send_prompt = async function(user_prompt) {
 
     let tool_call = {};
 
+    
     let openai = new OpenAI(user_data['settings']['service_settings']['api_key']);
     const response = await openai.call_api(messages);
     const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
