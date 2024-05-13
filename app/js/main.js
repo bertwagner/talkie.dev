@@ -92,7 +92,7 @@ let send_prompt = async function(user_prompt) {
 
     let tool_call = {};
 
-    
+
     let openai = new OpenAI(user_data['settings']['service_settings']['api_key']);
     const response = await openai.call_api(messages);
     const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
@@ -121,6 +121,7 @@ let send_prompt = async function(user_prompt) {
             }
 
             const json = JSON.parse(data.substring(6));
+            console.log(json)
             let next_value = json.choices[0].delta.content;
             
 
@@ -132,6 +133,7 @@ let send_prompt = async function(user_prompt) {
 
             if (json.choices[0].delta.tool_calls) {
                 let tool_output = json.choices[0].delta.tool_calls[0];
+                
                 if (tool_output.id){
                     tool_call["id"] = tool_output.id;
                 }
@@ -147,6 +149,7 @@ let send_prompt = async function(user_prompt) {
                 if (tool_output["function"].arguments){
                     tool_call["arguments"] += tool_output["function"].arguments;
                 }
+                console.log(tool_call)
             }
         });
         
@@ -168,22 +171,22 @@ let send_prompt = async function(user_prompt) {
 
 
 
-    // if (tool_call["name"] == "get_current_weather") {
-    //     tool_call["arguments"] = JSON.parse(tool_call["arguments"]);
+    if (tool_call["name"] == "get_current_weather") {
+        tool_call["arguments"] = JSON.parse(tool_call["arguments"]);
 
-    //     let weather = get_current_weather(tool_call["arguments"]["location"], tool_call["arguments"]["format"])
+        let weather = openai.get_current_weather(tool_call["arguments"]["location"], tool_call["arguments"]["format"])
 
-    //     raw_output += weather;
-    //     messageReceived.innerHTML = converter.makeHtml(raw_output);
-    //     messageReceived.scrollIntoView();
-    //     messages.push({
-    //         "role": "function",
-    //         "tool_call_id": tool_call["id"],
-    //         "name": "get_current_weather",
-    //         "content": weather
-    //     });
+        raw_output += weather;
+        messageReceived.innerHTML = converter.makeHtml(raw_output);
+        messageReceived.scrollIntoView();
+        messages.push({
+            "role": "function",
+            "tool_call_id": tool_call["id"],
+            "name": "get_current_weather",
+            "content": weather
+        });
 
-    // }
+    }
 }
 
 

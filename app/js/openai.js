@@ -2,10 +2,8 @@ class OpenAI {
 
     constructor (api_key = None) {
         this.api_key = api_key;
-    }
 
-    #tools = [
-        {
+        this.tools = [{
             "type": "function",
             "function": {
                 "name": "get_current_weather",
@@ -26,18 +24,16 @@ class OpenAI {
                     "required": [],
                 },
             }
-        }
-    ];
-    #get_current_weather(location,format) {
+        }];
+    }
+
+    get_current_weather(location,format) {
 
         return "The weather is TOTALLY RAD!";
     }
 
     
 
-
-
-    //put this in another js file
     async call_api (messages) {
         // call api
         return fetch(user_data['settings']['service_settings']['endpoint'], {
