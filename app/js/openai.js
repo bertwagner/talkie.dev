@@ -49,7 +49,87 @@ class OpenAI {
             tools: this.tools,
             messages: messages
             })
-        });
+        })
+        .then(response => response.body.pipeThrough(new TextDecoderStream()))
+        .then(rs => {
+            const reader = rs.getReader();
+            if (!reader) return;
+
+            return new ReadableStream({
+                async start(controller) {
+                    let dataDone = false;
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        
+
+                        const arr = value.split('\n');
+                        arr.forEach((data) => {
+                            if (data.length === 0) { 
+                                // ignore empty message
+                                return; 
+                            } 
+                            if (data.startsWith(':')) { 
+                                // ignore sse comment message
+                                console.log('sse!')
+                                return; 
+                            } 
+                            if (data === 'data: [DONE]') {
+                                dataDone = true;
+                                return;
+                            }
+                
+                            const json = JSON.parse(data.substring(6));
+                            
+                            let next_value = json.choices[0].delta.content;
+                            
+                            // Enqueue the next data chunk into our target stream
+                            controller.enqueue(next_value);
+                
+                            // if (next_value) {
+                            //     raw_output += next_value
+                            //     messageReceived.innerHTML = converter.makeHtml(raw_output);
+                            //     messageReceived.scrollIntoView();
+                            // } 
+                
+                            // if (json.choices[0].delta.tool_calls) {
+                            //     let tool_output = json.choices[0].delta.tool_calls[0];
+                                
+                            //     if (tool_output.id){
+                            //         tool_call["id"] = tool_output.id;
+                            //     }
+                                
+                            //     if (tool_output["function"].name){
+                            //         tool_call["name"] = tool_output["function"].name;
+                            //     }
+                
+                            //     if (!tool_call["arguments"]) {
+                            //         tool_call["arguments"] = "";
+                            //     }
+                
+                            //     if (tool_output["function"].arguments){
+                            //         tool_call["arguments"] += tool_output["function"].arguments;
+                            //     }
+                            //     console.log(tool_call)
+                            // }
+                        });
+
+                        // When no more data needs to be consumed, break the reading
+                        if (done) {
+                            break;
+                        }
+
+                    
+                    }
+
+                    // Close the stream
+                    controller.close();
+                    reader.releaseLock();
+                }
+            })
+        })
+        // Create a new response out of the stream
+        .then(rs => new Response(rs));
 
     }
 

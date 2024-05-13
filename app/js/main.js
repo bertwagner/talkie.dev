@@ -95,7 +95,8 @@ let send_prompt = async function(user_prompt) {
 
     let openai = new OpenAI(user_data['settings']['service_settings']['api_key']);
     const response = await openai.call_api(messages);
-    const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
+
+    const reader = response.body?.getReader();
 
     if (!reader) return;
     
@@ -104,54 +105,37 @@ let send_prompt = async function(user_prompt) {
         if (done) break;
 
         let dataDone = false;
-        const arr = value.split('\n');
-        arr.forEach((data) => {
-            if (data.length === 0) { 
-                // ignore empty message
-                return; 
-            } 
-            if (data.startsWith(':')) { 
-                // ignore sse comment message
-                console.log('sse!')
-                return; 
-            } 
-            if (data === 'data: [DONE]') {
-                dataDone = true;
-                return;
-            }
+        
+        let next_value = value;
+        
 
-            const json = JSON.parse(data.substring(6));
-            console.log(json)
-            let next_value = json.choices[0].delta.content;
+        if (next_value) {
+            raw_output += next_value
+            messageReceived.innerHTML = converter.makeHtml(raw_output);
+            messageReceived.scrollIntoView();
+        } 
+
+        // if (json.choices[0].delta.tool_calls) {
+        //     let tool_output = json.choices[0].delta.tool_calls[0];
             
+        //     if (tool_output.id){
+        //         tool_call["id"] = tool_output.id;
+        //     }
+            
+        //     if (tool_output["function"].name){
+        //         tool_call["name"] = tool_output["function"].name;
+        //     }
 
-            if (next_value) {
-                raw_output += next_value
-                messageReceived.innerHTML = converter.makeHtml(raw_output);
-                messageReceived.scrollIntoView();
-            } 
+        //     if (!tool_call["arguments"]) {
+        //         tool_call["arguments"] = "";
+        //     }
 
-            if (json.choices[0].delta.tool_calls) {
-                let tool_output = json.choices[0].delta.tool_calls[0];
-                
-                if (tool_output.id){
-                    tool_call["id"] = tool_output.id;
-                }
-                
-                if (tool_output["function"].name){
-                    tool_call["name"] = tool_output["function"].name;
-                }
+        //     if (tool_output["function"].arguments){
+        //         tool_call["arguments"] += tool_output["function"].arguments;
+        //     }
+        //     console.log(tool_call)
+        // }
 
-                if (!tool_call["arguments"]) {
-                    tool_call["arguments"] = "";
-                }
-
-                if (tool_output["function"].arguments){
-                    tool_call["arguments"] += tool_output["function"].arguments;
-                }
-                console.log(tool_call)
-            }
-        });
         
         if (dataDone) break;
         
