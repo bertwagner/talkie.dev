@@ -58,6 +58,7 @@ class OpenAI {
             return new ReadableStream({
                 async start(controller) {
                     let dataDone = false;
+                    let tool_call = {};
                     while (true) {
                         const { done, value } = await reader.read();
                         if (done) break;
@@ -83,36 +84,43 @@ class OpenAI {
                             
                             let next_value = json.choices[0].delta.content;
                             
-                            // Enqueue the next data chunk into our target stream
-                            controller.enqueue(next_value);
-                
                             // if (next_value) {
                             //     raw_output += next_value
                             //     messageReceived.innerHTML = converter.makeHtml(raw_output);
                             //     messageReceived.scrollIntoView();
                             // } 
                 
-                            // if (json.choices[0].delta.tool_calls) {
-                            //     let tool_output = json.choices[0].delta.tool_calls[0];
+                            if (json.choices[0].delta.tool_calls) {
+                                let tool_output = json.choices[0].delta.tool_calls[0];
                                 
-                            //     if (tool_output.id){
-                            //         tool_call["id"] = tool_output.id;
-                            //     }
                                 
-                            //     if (tool_output["function"].name){
-                            //         tool_call["name"] = tool_output["function"].name;
-                            //     }
+                                if (tool_output.id){
+                                    tool_call["id"] = tool_output.id;
+                                }
+                                
+                                if (tool_output["function"].name){
+                                    tool_call["name"] = tool_output["function"].name;
+                                }
                 
-                            //     if (!tool_call["arguments"]) {
-                            //         tool_call["arguments"] = "";
-                            //     }
+                                if (!tool_call["arguments"]) {
+                                    tool_call["arguments"] = "";
+                                }
                 
-                            //     if (tool_output["function"].arguments){
-                            //         tool_call["arguments"] += tool_output["function"].arguments;
-                            //     }
-                            //     console.log(tool_call)
-                            // }
+                                if (tool_output["function"].arguments){
+                                    tool_call["arguments"] += tool_output["function"].arguments;
+                                }
+                            }
+
+                            // Enqueue the next data chunk into our target stream
+                            if (next_value) {
+                                controller.enqueue({
+                                    "text": next_value
+                                });
+                            }
                         });
+
+                        
+
 
                         // When no more data needs to be consumed, break the reading
                         if (done) {
@@ -122,6 +130,11 @@ class OpenAI {
                     
                     }
 
+                    if ( Object.keys(tool_call).length > 0){
+                        controller.enqueue({
+                            "tool_call": tool_call
+                        });
+                    }
                     // Close the stream
                     controller.close();
                     reader.releaseLock();

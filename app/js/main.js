@@ -107,34 +107,13 @@ let send_prompt = async function(user_prompt) {
         let dataDone = false;
         
         let next_value = value;
-        
 
         if (next_value) {
             raw_output += next_value
             messageReceived.innerHTML = converter.makeHtml(raw_output);
             messageReceived.scrollIntoView();
         } 
-
-        // if (json.choices[0].delta.tool_calls) {
-        //     let tool_output = json.choices[0].delta.tool_calls[0];
-            
-        //     if (tool_output.id){
-        //         tool_call["id"] = tool_output.id;
-        //     }
-            
-        //     if (tool_output["function"].name){
-        //         tool_call["name"] = tool_output["function"].name;
-        //     }
-
-        //     if (!tool_call["arguments"]) {
-        //         tool_call["arguments"] = "";
-        //     }
-
-        //     if (tool_output["function"].arguments){
-        //         tool_call["arguments"] += tool_output["function"].arguments;
-        //     }
-        //     console.log(tool_call)
-        // }
+        console.log(next_value)
 
         
         if (dataDone) break;
@@ -222,7 +201,7 @@ document.addEventListener('submit', function(event) {
 
         if (event.target.id == "settings") {
 
-            user_data['settings']['service'] = document.querySelector("#settings__service").value;
+            // user_data['settings']['service'] = document.querySelector("#settings__service").value;
             user_data['settings']['service_settings']['llm_model'] = document.querySelector("#settings__service_settings__llm_model").value;
             user_data['settings']['service_settings']['api_key'] = document.querySelector("#settings__service_settings__api_key").value;
             
@@ -263,6 +242,6 @@ if ("user_data" in localStorage) {
 
 const responseContainer = document.getElementById('chat-messages');
 
-// let user_prompt = "What's the weather in rocky river, oh?"
-let user_prompt = "How are you feeling?"
+let user_prompt = "What's the weather?"
+// let user_prompt = "How are you feeling?"
 send_prompt(user_prompt)
