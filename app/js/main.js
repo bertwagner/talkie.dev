@@ -54,6 +54,24 @@ function iterate(obj, stack=null) {
 }
 
 
+let print_prompt = function(prompt_class, prompt) {
+
+
+    const message = document.createElement("article");
+    message.classList.add('message');
+    message.classList.add(prompt_class);
+
+    if (prompt_class == "message-sent") {
+        let p = document.createElement("p");
+        p.textContent = prompt;
+        message.append(p);
+    }
+
+    responseContainer.appendChild(message);
+
+    return message;
+}
+
 
 let send_prompt = async function(user_prompt) {
     
@@ -62,26 +80,14 @@ let send_prompt = async function(user_prompt) {
         "content": user_prompt
     });
     
-
-    // print user prompt to chat
-    const messageSent = document.createElement("article");
-    messageSent.classList.add('message');
-    messageSent.classList.add('message-sent');
-    let p = document.createElement("p");
-    p.textContent = user_prompt;
-    messageSent.append(p);
-
-    responseContainer.appendChild(messageSent);
-
+    print_prompt("message-sent",user_prompt);
+    
     // add json phrase if not found
     if (user_data["model"]["json_mode"] == true && messages[messages.length-1]["content"].toLowerCase().indexOf("json") == -1) {
         messages[messages.length-1]["content"] += "Please return in JSON format.";
     }
 
-    const messageReceived = document.createElement("article");
-    messageReceived.classList.add('message');
-    messageReceived.classList.add('message-received');
-    responseContainer.appendChild(messageReceived);
+    const messageReceived = print_prompt("message-received","");
 
     var converter = new showdown.Converter();
     let raw_output = '';
@@ -90,7 +96,7 @@ let send_prompt = async function(user_prompt) {
         raw_output += '```js\n'
     }
 
-    let tool_call = {};
+
 
 
     let openai = new OpenAI(user_data['settings']['service_settings']['api_key']);
@@ -108,12 +114,33 @@ let send_prompt = async function(user_prompt) {
         
         let next_value = value;
 
-        if (next_value) {
-            raw_output += next_value
+        if ("text" in next_value) {
+            raw_output += next_value["text"]
             messageReceived.innerHTML = converter.makeHtml(raw_output);
             messageReceived.scrollIntoView();
         } 
-        console.log(next_value)
+
+        if ("tool_call" in next_value) {
+            console.log(next_value)
+            if (next_value["tool_call"]["name"] == "get_current_weather") {
+                let args = JSON.parse(next_value["tool_call"]["arguments"]);
+
+                let weather = openai.get_current_weather(args["location"], args["format"])
+                console.log(weather)
+                raw_output += weather;
+                messageReceived.innerHTML = converter.makeHtml(raw_output);
+                messageReceived.scrollIntoView();
+                messages.push({
+                    "role": "function",
+                    "tool_call_id": next_value["tool_call"]["id"],
+                    "name": "get_current_weather",
+                    "content": weather
+                });
+
+            }
+        }
+
+        
 
         
         if (dataDone) break;
@@ -133,23 +160,7 @@ let send_prompt = async function(user_prompt) {
     });
 
 
-
-    if (tool_call["name"] == "get_current_weather") {
-        tool_call["arguments"] = JSON.parse(tool_call["arguments"]);
-
-        let weather = openai.get_current_weather(tool_call["arguments"]["location"], tool_call["arguments"]["format"])
-
-        raw_output += weather;
-        messageReceived.innerHTML = converter.makeHtml(raw_output);
-        messageReceived.scrollIntoView();
-        messages.push({
-            "role": "function",
-            "tool_call_id": tool_call["id"],
-            "name": "get_current_weather",
-            "content": weather
-        });
-
-    }
+    
 }
 
 
