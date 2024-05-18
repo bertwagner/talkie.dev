@@ -24,6 +24,23 @@ class OpenAI {
                     "required": [],
                 },
             }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "create_image",
+                "description": "Create an image from text or another image using DALL-E.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "prompt": {
+                            "type": "string",
+                            "description": "The prompt text use specifying what kind of image to generate",
+                        }
+                    },
+                    "required": [],
+                },
+            }
         }];
     }
 
