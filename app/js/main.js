@@ -74,28 +74,7 @@ let user_data = {
  }
 
  let call_tools = async function(next_value) {  
-    if ("tool_call" in next_value) {
-        if (next_value["tool_call"]["name"] == "create_image") {
-            let args = JSON.parse(next_value["tool_call"]["arguments"]);
-
-            let image = await openai.create_image(args["prompt"])
-            image = await image.json();
-            b64_image = image["data"][0]["b64_json"];
-
-            console.log(b64_image);
-            
-            // TODO: START HERE WITH RAW OUTPUT AND PASTING THE IMGE TO THE OUTPUT
-            raw_output += image;
-            messageReceived.innerHTML = converter.makeHtml(raw_output);
-            messageReceived.scrollIntoView();
-            messages.push({
-                "role": "function",
-                "tool_call_id": next_value["tool_call"]["id"],
-                "name": next_value["tool_call"]["name"],
-                "content": image
-            });
-        }
-    }
+    
  }
  
  
@@ -142,7 +121,29 @@ let user_data = {
              messageReceived.scrollIntoView();
          } 
  
-        call_tools(next_value);
+         if ("tool_call" in next_value) {
+            if (next_value["tool_call"]["name"] == "create_image") {
+                let args = JSON.parse(next_value["tool_call"]["arguments"]);
+    
+                let image = await openai.create_image(args["prompt"])
+                image = await image.json();
+
+                image_url = image["data"][0]["url"];
+    
+                
+                let image_html = `<img src="${image_url}" />`;
+
+                raw_output += image_html;
+                messageReceived.innerHTML = image_html
+                messageReceived.scrollIntoView();
+                messages.push({
+                    "role": "function",
+                    "tool_call_id": next_value["tool_call"]["id"],
+                    "name": next_value["tool_call"]["name"],
+                    "content": image_html
+                });
+            }
+        }
          
          if (dataDone) break;
          

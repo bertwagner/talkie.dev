@@ -55,7 +55,7 @@ class OpenAI {
                 model: user_data["settings"]["service_settings"]["image_generation_model"],
                 prompt: prompt,
                 n: 1,
-                response_format:"b64_json",
+                response_format:"url",
                 size: user_data["model"]["image_generation_size"],
                 style: user_data["model"]["image_generation_style"]
             })
