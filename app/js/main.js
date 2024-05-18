@@ -6,7 +6,9 @@
 let user_data = {
     model: {
      system_prompt: "You are a helpful assistant.",
-     json_mode: false
+     json_mode: false,
+     image_generation_size: "1024x1024",
+     image_generation_style: "natural"
     },
     settings: {
      service: "OpenAI",
@@ -15,7 +17,8 @@ let user_data = {
          endpoint: "https://api.openai.com/v1/chat/completions",
          api_key: "",
          image_generation_on: true,
-         image_generation_model: "dall-e",
+         image_generation_model: "dall-e-3",
+         image_model_endpoint: "https://api.openai.com/v1/images/generations",
          vision_generation_on: true,
          vision_generation_model: "gpt-4-turbo"
      }
@@ -70,23 +73,27 @@ let user_data = {
      return message;
  }
 
- let call_tools = function(next_value) {  
+ let call_tools = async function(next_value) {  
     if ("tool_call" in next_value) {
-        if (next_value["tool_call"]["name"] == "get_current_weather") {
+        if (next_value["tool_call"]["name"] == "create_image") {
             let args = JSON.parse(next_value["tool_call"]["arguments"]);
 
-            let weather = openai.get_current_weather(args["location"], args["format"])
-            console.log(weather)
-            raw_output += weather;
+            let image = await openai.create_image(args["prompt"])
+            image = await image.json();
+            b64_image = image["data"][0]["b64_json"];
+
+            console.log(b64_image);
+            
+            // TODO: START HERE WITH RAW OUTPUT AND PASTING THE IMGE TO THE OUTPUT
+            raw_output += image;
             messageReceived.innerHTML = converter.makeHtml(raw_output);
             messageReceived.scrollIntoView();
             messages.push({
                 "role": "function",
                 "tool_call_id": next_value["tool_call"]["id"],
-                "name": "get_current_weather",
-                "content": weather
+                "name": next_value["tool_call"]["name"],
+                "content": image
             });
-
         }
     }
  }
@@ -199,6 +206,8 @@ let user_data = {
          if (event.target.id == "model") {
              user_data['model']['system_prompt'] = document.querySelector("#model__system_prompt").value;
              user_data['model']['json_mode'] = document.querySelector("#model__json_mode").checked;
+             user_data['model']['image_generation_size'] = document.querySelector("#model__image_generation_size").value;
+             user_data['model']['image_generation_style'] = document.querySelector("#model__image_generation_style").value;
  
              localStorage.setItem("user_data", JSON.stringify(user_data));
              document.querySelector("#model-container").classList.toggle("hidden");
@@ -209,6 +218,7 @@ let user_data = {
              // user_data['settings']['service'] = document.querySelector("#settings__service").value;
              user_data['settings']['service_settings']['llm_model'] = document.querySelector("#settings__service_settings__llm_model").value;
              user_data['settings']['service_settings']['api_key'] = document.querySelector("#settings__service_settings__api_key").value;
+             user_data['settings']['service_settings']['image_generation_model'] = document.querySelector("#settings__service_settings__image_generation_model").value;
 
              openai.api_key=user_data['settings']['service_settings']['api_key']
              
@@ -249,6 +259,6 @@ let user_data = {
  
  const responseContainer = document.getElementById('chat-messages');
  
- let user_prompt = "What's the weather?"
+ let user_prompt = "Generate an image of a zebra climbing a tree"
  // let user_prompt = "How are you feeling?"
  send_prompt(user_prompt)

@@ -44,9 +44,25 @@ class OpenAI {
         }];
     }
 
-    get_current_weather(location,format) {
+    async create_image(prompt) {
+        const response = fetch(user_data['settings']['service_settings']['image_model_endpoint'], {
+            method: 'POST',
+            headers: {
+            Authorization: `Bearer ${this.api_key}`,
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                model: user_data["settings"]["service_settings"]["image_generation_model"],
+                prompt: prompt,
+                n: 1,
+                response_format:"b64_json",
+                size: user_data["model"]["image_generation_size"],
+                style: user_data["model"]["image_generation_style"]
+            })
+        });
 
-        return "The weather is TOTALLY RAD!";
+        
+        return response;
     }
 
     
@@ -60,11 +76,11 @@ class OpenAI {
             'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-            model: user_data["settings"]["service_settings"]["llm_model"],
-            response_format: ((user_data["model"]["json_mode"]) ? {"type":"json_object"} : null),
-            stream: true,
-            tools: this.tools,
-            messages: messages
+                model: user_data["settings"]["service_settings"]["llm_model"],
+                response_format: ((user_data["model"]["json_mode"]) ? {"type":"json_object"} : null),
+                stream: true,
+                tools: this.tools,
+                messages: messages
             })
         })
         .then(response => response.body.pipeThrough(new TextDecoderStream()))
@@ -135,8 +151,6 @@ class OpenAI {
                                 });
                             }
                         });
-
-                        
 
 
                         // When no more data needs to be consumed, break the reading
