@@ -124,7 +124,7 @@ let user_data = {
          if ("tool_call" in next_value) {
             if (next_value["tool_call"]["name"] == "create_image") {
                 let args = JSON.parse(next_value["tool_call"]["arguments"]);
-    
+                messageReceived.innerHTML = "<p>Generating image...</p><progress style='max-width:500px' />";
                 let image = await openai.create_image(args["prompt"])
                 image = await image.json();
 
