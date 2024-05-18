@@ -260,6 +260,6 @@ let user_data = {
  
  const responseContainer = document.getElementById('chat-messages');
  
- let user_prompt = "Generate an image of a zebra climbing a tree"
+ //let user_prompt = "Generate an image of a zebra climbing a tree"
  // let user_prompt = "How are you feeling?"
- send_prompt(user_prompt)
+ //send_prompt(user_prompt)
