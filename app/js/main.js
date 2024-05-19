@@ -63,9 +63,7 @@ let print_prompt = function (prompt_class, prompt) {
     message.classList.add(prompt_class);
 
     if (prompt_class == "message-sent") {
-        let p = document.createElement("p");
-        p.textContent = prompt;
-        message.append(p);
+        message.innerHTML = prompt;
     }
 
     responseContainer.appendChild(message);
@@ -99,6 +97,7 @@ let send_prompt = async function (user_prompt) {
         "content": user_prompt
     });
 
+
     print_prompt("message-sent", user_prompt);
 
     // add json phrase if not found
@@ -108,12 +107,15 @@ let send_prompt = async function (user_prompt) {
 
     const messageReceived = print_prompt("message-received", "");
 
-    var converter = new showdown.Converter();
+    
     let raw_output = '';
 
     if (user_data["model"]["json_mode"] == true) {
         raw_output += '```js\n'
     }
+
+    var converter = new showdown.Converter();
+
 
     const response = await openai.call_api(messages);
 
@@ -264,8 +266,6 @@ document.addEventListener('submit', function (event) {
         document.querySelector("#user-prompt").blur();
 
         send_prompt(user_prompt);
-
-        // document.querySelector("#user-prompt").focus();
     }
 });
 

@@ -28,6 +28,10 @@ header > section {
     border-radius:25px;
 }
 
+.message-sent {
+    white-space: pre-wrap;
+}
+
 .message-received {
     margin-left:40px;
 }
