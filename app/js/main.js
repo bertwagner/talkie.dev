@@ -264,6 +264,7 @@ document.addEventListener('submit', function (event) {
         user_prompt = document.querySelector("#user-prompt").value;
         document.querySelector("#user-prompt").value = "";
         document.querySelector("#user-prompt").blur();
+        document.querySelector("#user-prompt").setAttribute("style","");
 
         send_prompt(user_prompt);
     }
