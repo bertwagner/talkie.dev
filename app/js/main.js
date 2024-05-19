@@ -200,17 +200,20 @@ document.addEventListener('click', function (event) {
         document.querySelector("#about-container").classList.toggle("hidden");
         document.querySelector("#model-container").classList.add("hidden");
         document.querySelector("#settings-container").classList.add("hidden");
+        document.querySelector("#welcome-container").classList.add("hidden");
     }
     if (event.target.dataset.nav == "model") {
         document.querySelector("#about-container").classList.add("hidden");
         document.querySelector("#model-container").classList.toggle("hidden");
         document.querySelector("#settings-container").classList.add("hidden");
+        document.querySelector("#welcome-container").classList.add("hidden");
     }
 
     if (event.target.dataset.nav == "settings") {
         document.querySelector("#about-container").classList.add("hidden");
         document.querySelector("#model-container").classList.add("hidden");
         document.querySelector("#settings-container").classList.toggle("hidden");
+        document.querySelector("#welcome-container").classList.add("hidden");
     }
 
     if (event.target.id == "clear") {
@@ -234,6 +237,8 @@ document.addEventListener('keydown', function(event) {
 
 document.addEventListener('submit', function (event) {
     event.preventDefault();
+
+    document.querySelector("footer").classList.remove("hidden");
 
     if (event.target.id == "model") {
         user_data['model']['system_prompt'] = document.querySelector("#model__system_prompt").value;
@@ -260,11 +265,26 @@ document.addEventListener('submit', function (event) {
         document.querySelector("#settings-container").classList.toggle("hidden");
     }
 
+    if (event.target.id == "welcome") {
+        document.querySelector("#welcome-container").classList.toggle("hidden");
+        document.querySelector("#settings__service_settings__api_key").value = document.querySelector("#welcome_api_key").value;
+        user_data['settings']['service_settings']['api_key'] = document.querySelector("#settings__service_settings__api_key").value;
+        
+        localStorage.setItem("user_data", JSON.stringify(user_data));
+        
+        openai.api_key = user_data['settings']['service_settings']['api_key'];
+    }
+
     if (event.target.id == "send-prompt") {
         user_prompt = document.querySelector("#user-prompt").value;
         document.querySelector("#user-prompt").value = "";
         document.querySelector("#user-prompt").blur();
         document.querySelector("#user-prompt").setAttribute("style","");
+
+        if (user_data["settings"]["service_settings"]["api_key"] == "") {
+            alert('You must first set an OpenAI API key in the Settings screen before using this app.');
+            return;
+        }
 
         send_prompt(user_prompt);
     }
@@ -287,9 +307,12 @@ if ("user_data" in localStorage) {
         "role": "system",
         "content": user_data["model"]["system_prompt"]
     })
+} else {
+    document.querySelector("#welcome-container").classList.remove("hidden");
+    document.querySelector("footer").classList.add("hidden");
 }
-let openai = new OpenAI(user_data['settings']['service_settings']['api_key']);
 
+let openai = new OpenAI(user_data['settings']['service_settings']['api_key']);
 
 const responseContainer = document.getElementById('chat-messages');
 
