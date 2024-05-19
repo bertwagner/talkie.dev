@@ -85,10 +85,6 @@ let auto_expand_textarea = function (field) {
     field.style.height = height + 'px';
 };
 
-let call_tools = async function (next_value) {
-
-}
-
 
 let send_prompt = async function (user_prompt) {
 
