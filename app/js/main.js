@@ -257,7 +257,7 @@ document.addEventListener('submit', function (event) {
 
         send_prompt(user_prompt);
 
-        document.querySelector("#user-prompt").focus();
+        // document.querySelector("#user-prompt").focus();
     }
 });
 
@@ -284,6 +284,6 @@ let openai = new OpenAI(user_data['settings']['service_settings']['api_key']);
 const responseContainer = document.getElementById('chat-messages');
 
 //let user_prompt = "Generate an image of a zebra climbing a tree"
-let user_prompt = "How are you feeling?"
-send_prompt(user_prompt)
+//let user_prompt = "How are you feeling?"
+//send_prompt(user_prompt)
 
