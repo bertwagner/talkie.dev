@@ -239,12 +239,14 @@ document.addEventListener('submit', function (event) {
 
     if (event.target.id == "settings") {
 
+
         // user_data['settings']['service'] = document.querySelector("#settings__service").value;
         user_data['settings']['service_settings']['llm_model'] = document.querySelector("#settings__service_settings__llm_model").value;
         user_data['settings']['service_settings']['api_key'] = document.querySelector("#settings__service_settings__api_key").value;
         user_data['settings']['service_settings']['image_generation_model'] = document.querySelector("#settings__service_settings__image_generation_model").value;
 
         openai.api_key = user_data['settings']['service_settings']['api_key']
+
 
         localStorage.setItem("user_data", JSON.stringify(user_data));
         document.querySelector("#settings-container").classList.toggle("hidden");
