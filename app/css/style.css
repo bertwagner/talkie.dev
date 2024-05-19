@@ -39,3 +39,13 @@ pre {
 section {
     border-bottom: 1px dashed var(--pico-color-zinc-100);
 }
+
+/* remove extra margin around paragraphs in chat frames */
+article > p {
+    margin:0;
+}
+
+textarea {
+	width: 100%;
+    height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2 + var(--pico-border-width) * 2)
+}
