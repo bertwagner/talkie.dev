@@ -44,3 +44,8 @@ section {
 article > p {
     margin:0;
 }
+
+textarea {
+	width: 100%;
+    height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2 + var(--pico-border-width) * 2)
+}
