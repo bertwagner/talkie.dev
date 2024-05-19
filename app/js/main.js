@@ -224,6 +224,12 @@ document.addEventListener('click', function (event) {
 
 });
 
+document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey && event.key == "Enter" && event.target.id == "user-prompt") {
+        let a = document.querySelector("form#send-prompt").requestSubmit();
+    }
+});
+
 document.addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -262,6 +268,7 @@ document.addEventListener('submit', function (event) {
         // document.querySelector("#user-prompt").focus();
     }
 });
+
 
 
 ///
