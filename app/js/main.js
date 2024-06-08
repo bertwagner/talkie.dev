@@ -8,12 +8,12 @@ let user_data = {
         system_prompt: "You are a helpful assistant.",
         json_mode: false,
         image_generation_size: "1024x1024",
-        image_generation_style: "natural"
+        image_generation_style: "vivid"
     },
     settings: {
         service: "OpenAI",
         service_settings: {
-            llm_model: "gpt-3.5-turbo",
+            llm_model: "gpt-4o",
             endpoint: "https://api.openai.com/v1/chat/completions",
             api_key: "",
             image_generation_on: true,
