@@ -111,6 +111,7 @@ let send_prompt = async function (user_prompt) {
     }
 
     var converter = new showdown.Converter();
+    converter.setOption('simpleLineBreaks', true);
 
 
     const response = await openai.call_api(messages);

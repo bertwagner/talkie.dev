@@ -115,13 +115,8 @@ class OpenAI {
                 
                             const json = JSON.parse(data.substring(6));
                             
-                            let next_value = json.choices[0].delta.content;
                             
-                            // if (next_value) {
-                            //     raw_output += next_value
-                            //     messageReceived.innerHTML = converter.makeHtml(raw_output);
-                            //     messageReceived.scrollIntoView();
-                            // } 
+                            let next_value = json.choices[0].delta.content;
                 
                             if (json.choices[0].delta.tool_calls) {
                                 let tool_output = json.choices[0].delta.tool_calls[0];
